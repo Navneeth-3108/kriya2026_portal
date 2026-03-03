@@ -6,6 +6,7 @@ import island3 from "../assets/island3.png";
 import obj1 from "../assets/obj1.png";
 import obj2 from "../assets/obj2.png";
 import obj3 from "../assets/obj3.png";
+import obj4 from "../assets/obj4.png";
 import shovelImg from "../assets/shovel.png";
 import "../styles/mapPage.css";
 
@@ -39,17 +40,23 @@ const MapPage = () => {
         { id: 104, name: "Mist", color: "#a5b1c2", desc: "Hide ship movements" }
     ];
 
-    // Island Graph Data - easy to adjust coordinates here
+    // Island Graph Data - Easy to adjust size and position
     const islands = [
-        { id: 1, name: "Azure Haven", img: island1, top: "65%", left: "5%" },
-        { id: 2, name: "Emerald Isle", img: island2, top: "60%", left: "70%" },
-        { id: 3, name: "Storm Peak", img: island3, top: "15%", left: "50%" }
+        { id: 1, name: "Isla Muerta", img: island1, top: "60%", left: "0%", size: "250px" },
+        { id: 2, name: "Tortuga Island", img: island2, top: "60%", left: "63%", size: "300px" },
+        { id: 3, name: "Port Royal", img: island3, top: "2%", left: "60%", size: "250px" }
     ];
+
+    // Clear old sync data if it exists
+    React.useEffect(() => {
+        localStorage.removeItem('kriya_island_config');
+    }, []);
 
     const decorations = [
         { id: "d1", img: obj1, top: "20%", left: "20%", size: "80px" },
         { id: "d2", img: obj2, top: "10%", left: "90%", size: "90px" },
-        { id: "d3", img: obj3, top: "75%", left: "48%", size: "50px" }
+        { id: "d3", img: obj3, top: "75%", left: "48%", size: "50px" },
+        { id: "d4", img: obj4, top: "40%", left: "80%", size: "70px" }
     ];
 
     const handleMouseMove = (e) => {
@@ -134,7 +141,7 @@ const MapPage = () => {
     };
 
     return (
-        <div className="map-page-container">
+        <div className={`map-page-container ${isTreasureHunting ? 'treasure-hunting-active' : ''}`}>
             <div
                 className="map-viewport"
                 onMouseMove={handleMouseMove}
@@ -150,7 +157,12 @@ const MapPage = () => {
                             className={`island-node island-${island.id}`}
                             style={{ top: island.top, left: island.left }}
                         >
-                            <img src={island.img} alt={island.name} className="island-image" />
+                            <img
+                                src={island.img}
+                                alt={island.name}
+                                className="island-image"
+                                style={{ width: island.size || "150px" }}
+                            />
                             <div className="island-info">
                                 <span className="island-name">{island.name}</span>
                             </div>
@@ -203,13 +215,15 @@ const MapPage = () => {
 
                 <div className="navbar-right">
                     <div className="nav-actions-group">
-                        <div
-                            className={`treasure-hunt-btn ${isTreasureHunting ? 'active' : ''}`}
-                            onClick={() => setIsTreasureHunting(!isTreasureHunting)}
-                        >
-                            <div className="treasure-icon">💎</div>
-                            <span>{isTreasureHunting ? 'Cancel' : 'Find Treasure'}</span>
-                        </div>
+                        {foundObjects.length < decorations.length && (
+                            <div
+                                className={`treasure-hunt-btn ${isTreasureHunting ? 'active' : ''}`}
+                                onClick={() => setIsTreasureHunting(!isTreasureHunting)}
+                            >
+                                <div className="treasure-icon">💎</div>
+                                <span>{isTreasureHunting ? 'Cancel' : 'Find Treasure'}</span>
+                            </div>
+                        )}
                         <div className="action-cards-btn" onClick={() => setIsActionPopupOpen(true)}>
                             <div className="action-icon">⚡</div>
                             <span>Action Cards</span>
