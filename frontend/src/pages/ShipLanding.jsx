@@ -3,19 +3,19 @@ import "./ShipLanding.css";
 
 const ships = [
   {
-    id: "warship",
+    id: "WARSHIP",
     name: "Grand Bernacle",
     subtitle: "Where cannons roar, legends are born",
     img: "/GrandBernacle.png",
   },
   {
-    id: "merchant",
+    id: "MERCHANT",
     name: "Merchant Vessel",
     subtitle: "Fortune favors those who dare.",
     img: "/merchantvessel.png",
   },
   {
-    id: "ghost",
+    id: "GHOST",
     name: "Black Pearl",
     subtitle: "Born of shadow. Feared by all",
     img: "/blackpearlGhostship.png",
@@ -25,8 +25,34 @@ const ships = [
 export default function ShipLanding() {
   const navigate = useNavigate();
 
-  const handleSelect = (ship) => {
-    navigate("/anchorage", { state: { ship } });
+  const handleSelect = async (ship) => {
+    try {
+
+      const team = JSON.parse(localStorage.getItem("team"));
+
+      const res = await fetch(
+        "http://localhost:3000/kriyabe/api/teams/select-ship",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            kriyaID: team.kriyaID,
+            shipConfig: ship.id
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        navigate("/anchorage", { state: { ship } });
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -49,7 +75,7 @@ export default function ShipLanding() {
           </div>
         ))}
       </div>
-      
+
       <p className="bottom-quote">
         Not all who sail return… but all are remembered.
       </p>

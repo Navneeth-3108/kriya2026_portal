@@ -42,76 +42,51 @@ export function GameProvider({ children }) {
   const [opened, setOpened] = useState(() => {
     const arr = Array.isArray(saved?.opened) ? saved.opened : [];
     return new Set(arr.map((x) => Number(x)).filter((n) => Number.isFinite(n)));
-    });
-  const [cards, setCards] = useState(() => (Array.isArray(saved?.cards) ? saved.cards : []));
+  });
+  const [cards, setCards] = useState(() =>
+    Array.isArray(saved?.cards) ? saved.cards : []
+  );
 
-  // ✅ keep a ref so we can check opened instantly (no setState updater side-effects)
   const openedRef = useRef(opened);
-  useEffect(() => {
-    openedRef.current = opened;
-  }, [opened]);
+  useEffect(() => { openedRef.current = opened; }, [opened]);
 
   useEffect(() => {
     sessionStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({
-        points,
-        opened: Array.from(opened),
-        cards,
-      })
+      JSON.stringify({ points, opened: Array.from(opened), cards })
     );
   }, [points, opened, cards]);
 
   const chests = useMemo(() => {
     return seaNames.map((name, index) => {
       const id = index + 1;
-      return {
-        id,
-        name,
-        left: slots[index].left,
-        top: slots[index].top,
-        opened: opened.has(id),
-      };
+      return { id, name, left: slots[index].left, top: slots[index].top, opened: opened.has(id) };
     });
   }, [opened]);
 
   const seasCleared = opened.size;
 
-  // ✅ Add card ONLY when Anchorage popup is closed
   const addCard = (card) => {
     if (!card) return;
     const key = String(card.id ?? card.name ?? "").trim();
     if (!key) return;
 
-    setCards((prev) => {
-      const exists = prev.some((c) => String(c.id ?? c.name) === key);
+    setCards(prev => {
+      const exists = prev.some(c => String(c.id ?? c.name) === key);
       return exists ? prev : [...prev, { ...card, id: key }];
     });
   };
 
-  // ✅ FIXED: no setPoints inside setOpened updater (prevents 50->100 in StrictMode)
-  const markSeaOpened = (seaId, earnedPoints = 0) => {
+  const markSeaOpened = (seaId, earnedPoints = 0, card = null) => {
     const sid = Number(seaId);
     const pts = Number(earnedPoints);
 
-    if (!Number.isFinite(sid)) return;
-    if (sid < 1 || sid > seaNames.length) return;
-
-    // ✅ guard: if already opened, do nothing
+    if (!Number.isFinite(sid) || sid < 1 || sid > seaNames.length) return;
     if (openedRef.current.has(sid)) return;
 
-    // update opened
-    setOpened((prev) => {
-      if (prev.has(sid)) return prev;
-      const next = new Set(prev);
-      next.add(sid);
-      return next;
-    });
-
-    // update points once
-    if (Number.isFinite(pts) && pts !== 0) {
-      setPoints((p) => p + pts);
-    }
+    setOpened(prev => { const next = new Set(prev); next.add(sid); return next; });
+    if (Number.isFinite(pts) && pts !== 0) setPoints(p => p + pts);
+    addCard(card);
   };
 
   const resetGame = () => {
@@ -121,17 +96,7 @@ export function GameProvider({ children }) {
     sessionStorage.removeItem(STORAGE_KEY);
   };
 
-  const value = {
-    chests,
-    points,
-    seasCleared,
-    cards,
-    addCard,
-    markSeaOpened,
-    resetGame,
-  };
-
-  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+  return <GameContext.Provider value={{ chests, points, seasCleared, cards, addCard, markSeaOpened, resetGame }}>{children}</GameContext.Provider>;
 }
 
 export function useGame() {
