@@ -2,7 +2,7 @@ import "./Anchorage.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useGame } from "../context/GameContext";
 import { useEffect, useRef, useState } from "react";
-import { API_BASE } from "./viteconfig.js";
+import { API_BASE } from "../config/api";
 
 export default function Anchorage() {
   const navigate = useNavigate();

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./ShipLanding.css";
-import { API_BASE } from "./viteconfig.js";
+import { API_BASE } from "../config/api";
+
 const ships = [
   {
     id: "WARSHIP",

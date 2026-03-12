@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from "react-router-dom"
 import '../styles/login.css'
 import psglogo from '../assets/PSG.jpg'
+import { API_BASE } from "../config/api";
 
 function Login({ onLoginSuccess }) {
 
@@ -24,7 +25,7 @@ function Login({ onLoginSuccess }) {
 
         try {
 
-            const res = await fetch("http://localhost:3000/kriyabe/api/auth/login", {
+            const res = await fetch("${API_BASE}/api/auth/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
