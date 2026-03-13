@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import mapImg from "../assets/roundbg.png";
 import island1 from "../assets/island1.png";
 import island2 from "../assets/island2.png";
@@ -13,6 +14,7 @@ import "../styles/mapPage.css";
 const API_BASE = "http://localhost:5000/kriyabe/api";
 
 const MapPage = () => {
+    const navigate = useNavigate();
     const [team, setTeam] = useState(null);
     const [allAlgoCards, setAllAlgoCards] = useState([]);
     const [selectedCards, setSelectedCards] = useState(() => {
@@ -115,7 +117,7 @@ const MapPage = () => {
         fetchAlgos();
     }, []);
 
-    const fetchTeamData = async () => {
+    async function fetchTeamData() {
         const storedTeam = JSON.parse(localStorage.getItem("team"));
         const token = localStorage.getItem("token");
         if (!storedTeam || !storedTeam.id) return;
@@ -129,9 +131,9 @@ const MapPage = () => {
         } catch (err) {
             console.error("Failed to fetch team data", err);
         }
-    };
+    }
 
-    const fetchAlgos = async () => {
+    async function fetchAlgos() {
         try {
             const res = await fetch(`${API_BASE}/algorithms`);
             const data = await res.json();
@@ -139,7 +141,7 @@ const MapPage = () => {
         } catch (err) {
             console.error("Failed to fetch algorithms", err);
         }
-    };
+    }
 
     const fetchR2Questions = async (pickedCards) => {
         try {
@@ -167,82 +169,86 @@ const MapPage = () => {
         }
     };
 
-    const decorations = [
-        { id: "d1", img: obj1, top: "20%", left: "20%", size: "80px" },
-        { id: "d2", img: obj2, top: "10%", left: "90%", size: "90px" },
-        { id: "d3", img: obj3, top: "75%", left: "48%", size: "50px" },
-        { id: "d4", img: obj4, top: "40%", left: "80%", size: "70px" }
-    ];
+  const decorations = [
+    { id: "d1", img: obj1, top: "20%", left: "20%", size: "80px" },
+    { id: "d2", img: obj2, top: "10%", left: "90%", size: "90px" },
+    { id: "d3", img: obj3, top: "75%", left: "48%", size: "50px" },
+    { id: "d4", img: obj4, top: "40%", left: "80%", size: "70px" },
+  ];
 
-    const handleMouseMove = (e) => {
-        if (!isTreasureHunting || currentTargetIndex >= decorations.length) return;
+  const handleMouseMove = (e) => {
+    if (!isTreasureHunting || currentTargetIndex >= decorations.length) return;
 
-        const viewport = e.currentTarget.getBoundingClientRect();
-        const mapImgElement = e.currentTarget.querySelector('.map-background');
+    const mapImgElement = e.currentTarget.querySelector(".map-background");
 
-        if (!mapImgElement) return;
+    if (!mapImgElement) return;
 
-        const imgRect = mapImgElement.getBoundingClientRect();
+    const imgRect = mapImgElement.getBoundingClientRect();
 
-        // Calculate cursor position relative to the ACTUAL image bounds
-        const mouseInImgX = e.clientX - imgRect.left;
-        const mouseInImgY = e.clientY - imgRect.top;
+    // Calculate cursor position relative to the ACTUAL image bounds
+    const mouseInImgX = e.clientX - imgRect.left;
+    const mouseInImgY = e.clientY - imgRect.top;
 
-        // Current shovel position for state
-        setCursorPos({ x: e.clientX, y: e.clientY });
+    // Current shovel position for state
+    setCursorPos({ x: e.clientX, y: e.clientY });
 
-        const target = decorations[currentTargetIndex];
+    const target = decorations[currentTargetIndex];
 
-        // Convert target % coordinates to pixels based on the ACTUAL image size
-        const targetX = (parseFloat(target.left) / 100) * imgRect.width;
-        const targetY = (parseFloat(target.top) / 100) * imgRect.height;
+    // Convert target % coordinates to pixels based on the ACTUAL image size
+    const targetX = (parseFloat(target.left) / 100) * imgRect.width;
+    const targetY = (parseFloat(target.top) / 100) * imgRect.height;
 
-        // Calculate angle from the mouse (within image) to target (within image)
-        const dx = targetX - mouseInImgX;
-        const dy = targetY - mouseInImgY;
+    // Calculate angle from the mouse (within image) to target (within image)
+    const dx = targetX - mouseInImgX;
+    const dy = targetY - mouseInImgY;
 
-        const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        setCompassRotation(angle + 90); // +90 because the emoji needle points "up" (North)
-    };
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    setCompassRotation(angle + 90); // +90 because the emoji needle points "up" (North)
+  };
 
-    const handleMapClick = (e) => {
-        if (!isTreasureHunting || currentTargetIndex >= decorations.length) return;
+  const handleMapClick = (e) => {
+    if (!isTreasureHunting || currentTargetIndex >= decorations.length) return;
 
-        const mapImgElement = e.currentTarget.querySelector('.map-background');
-        if (!mapImgElement) return;
+    const mapImgElement = e.currentTarget.querySelector(".map-background");
+    if (!mapImgElement) return;
 
-        const imgRect = mapImgElement.getBoundingClientRect();
+    const imgRect = mapImgElement.getBoundingClientRect();
 
-        // Cursor relative to the image
-        const mouseInImgX = e.clientX - imgRect.left;
-        const mouseInImgY = e.clientY - imgRect.top;
+    // Cursor relative to the image
+    const mouseInImgX = e.clientX - imgRect.left;
+    const mouseInImgY = e.clientY - imgRect.top;
 
-        const target = decorations[currentTargetIndex];
-        const targetX = (parseFloat(target.left) / 100) * imgRect.width;
-        const targetY = (parseFloat(target.top) / 100) * imgRect.height;
+    const target = decorations[currentTargetIndex];
+    const targetX = (parseFloat(target.left) / 100) * imgRect.width;
+    const targetY = (parseFloat(target.top) / 100) * imgRect.height;
 
-        // Distance check relative to the image scaling
-        const distance = Math.sqrt(Math.pow(targetX - mouseInImgX, 2) + Math.pow(targetY - mouseInImgY, 2));
+    // Distance check relative to the image scaling
+    const distance = Math.sqrt(
+      Math.pow(targetX - mouseInImgX, 2) + Math.pow(targetY - mouseInImgY, 2),
+    );
 
-        if (distance < 60) {
-            const newFound = [...foundObjects, target.id];
-            setFoundObjects(newFound);
-            setCurrentTargetIndex(currentTargetIndex + 1);
+    if (distance < 60) {
+      const newFound = [...foundObjects, target.id];
+      setFoundObjects(newFound);
+      setCurrentTargetIndex(currentTargetIndex + 1);
 
-            if (currentTargetIndex + 1 >= decorations.length) {
-                setTimeout(() => {
-                    setIsTreasureHunting(false);
-                    alert("Complete! Map decorated.");
-                }, 500);
-            }
-        }
-    };
+      if (currentTargetIndex + 1 >= decorations.length) {
+        setTimeout(() => {
+          setIsTreasureHunting(false);
+          alert("Complete! Map decorated.");
+        }, 500);
+      }
+    }
+  };
 
-    const handleSelectCard = (card) => {
-        if (selectedCards.length < 3 && !selectedCards.find(c => c.id === card.id)) {
-            setSelectedCards([...selectedCards, card]);
-        }
-    };
+  const handleSelectCard = (card) => {
+    if (
+      selectedCards.length < 3 &&
+      !selectedCards.find((c) => c.id === card.id)
+    ) {
+      setSelectedCards([...selectedCards, card]);
+    }
+  };
 
     const handleConfirmSelection = () => {
         if (selectedCards.length === 3) {
@@ -281,34 +287,41 @@ const MapPage = () => {
         }
     };
 
-    return (
-        <div className={`map-page-container ${isTreasureHunting ? 'treasure-hunting-active' : ''}`}>
-            <div
-                className="map-viewport"
-                onMouseMove={handleMouseMove}
-                onClick={handleMapClick}
-                style={{ cursor: isTreasureHunting ? 'none' : 'default' }}
-            >
-                <img src={mapImg} alt="World Map" className="map-background" />
+  return (
+    <div
+      className={`map-page-container ${isTreasureHunting ? "treasure-hunting-active" : ""}`}
+    >
+      <div
+        className="map-viewport"
+        onMouseMove={handleMouseMove}
+        onClick={handleMapClick}
+        style={{ cursor: isTreasureHunting ? "none" : "default" }}
+      >
+        <img src={mapImg} alt="World Map" className="map-background" />
 
-                <div className="islands-layer">
-                    {islands.map(island => (
-                        <div
-                            key={island.id}
-                            className={`island-node island-${island.id}`}
-                            style={{ top: island.top, left: island.left }}
-                        >
-                            <img
-                                src={island.img}
-                                alt={island.name}
-                                className="island-image"
-                                style={{ width: island.size || "150px" }}
-                            />
-                            <div className="island-info">
-                                <span className="island-name">{island.name}</span>
-                            </div>
-                        </div>
-                    ))}
+        <div className="islands-layer">
+          {islands.map((island) => (
+            <div
+              key={island.id}
+              className={`island-node island-${island.id}`}
+              style={{ top: island.top, left: island.left, cursor: "pointer" }}
+              onClick={() => {
+                if (!isTreasureHunting) {
+                  navigate("/codequest/arena");
+                }
+              }}
+            >
+              <img
+                src={island.img}
+                alt={island.name}
+                className="island-image"
+                style={{ width: island.size || "150px" }}
+              />
+              <div className="island-info">
+                <span className="island-name">{island.name}</span>
+              </div>
+            </div>
+          ))}
 
                     {/* Decorations Layer */}
                     {decorations.map(obj => (
@@ -336,120 +349,136 @@ const MapPage = () => {
                 </div>
             </div>
 
-            <nav className="card-navbar">
-                <div className="navbar-left">
-                    <div className="selected-cards-container">
-                        {[0, 1, 2].map((index) => (
-                            <div key={index} className="card-slot portrait-card">
-                                {selectedCards[index] ? (
-                                    <div
-                                        className="card-content"
-                                        style={{ backgroundColor: selectedCards[index].color }}
-                                    >
-                                        <span>{selectedCards[index].name}</span>
-                                    </div>
-                                ) : (
-                                    <div className="card-placeholder">?</div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+      <nav className="card-navbar">
+        <div className="navbar-left">
+          <div className="selected-cards-container">
+            {[0, 1, 2].map((index) => (
+              <div key={index} className="card-slot portrait-card">
+                {selectedCards[index] ? (
+                  <div
+                    className="card-content"
+                    style={{ backgroundColor: selectedCards[index].color }}
+                  >
+                    <span>{selectedCards[index].name}</span>
+                  </div>
+                ) : (
+                  <div className="card-placeholder">?</div>
+                )}
+              </div>
+            ))}
+          </div>
 
-                    {!cardsChosen && (
-                        <div className="choose-cards-option" onClick={() => setIsPopupOpen(true)}>
-                            <div className="plus-icon">+</div>
-                            <span>Choose Cards</span>
-                        </div>
-                    )}
-                </div>
-
-                <div className="navbar-right">
-                    <div className="nav-actions-group">
-                        {foundObjects.length < decorations.length && (
-                            <div
-                                className={`treasure-hunt-btn ${isTreasureHunting ? 'active' : ''}`}
-                                onClick={() => setIsTreasureHunting(!isTreasureHunting)}
-                            >
-                                <div className="treasure-icon">💎</div>
-                                <span>{isTreasureHunting ? 'Cancel' : 'Find Treasure'}</span>
-                            </div>
-                        )}
-                        <div className="action-cards-btn" onClick={() => setIsActionPopupOpen(true)}>
-                            <div className="action-icon">⚡</div>
-                            <span>Action Cards</span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <div className="map-overlay">
-                {/* Future overlay content like pins or labels can go here */}
+          {!cardsChosen && (
+            <div
+              className="choose-cards-option"
+              onClick={() => setIsPopupOpen(true)}
+            >
+              <div className="plus-icon">+</div>
+              <span>Choose Cards</span>
             </div>
+          )}
+        </div>
 
-            {/* Treasure Hunt UI Layer - Absolute Top Z-Index */}
-            {isTreasureHunting && (
-                <>
-                    {/* Shovel Cursor */}
+        <div className="navbar-right">
+          <div className="nav-actions-group">
+            {foundObjects.length < decorations.length && (
+              <div
+                className={`treasure-hunt-btn ${isTreasureHunting ? "active" : ""}`}
+                onClick={() => setIsTreasureHunting(!isTreasureHunting)}
+              >
+                <div className="treasure-icon">💎</div>
+                <span>{isTreasureHunting ? "Cancel" : "Find Treasure"}</span>
+              </div>
+            )}
+            <div
+              className="action-cards-btn"
+              onClick={() => setIsActionPopupOpen(true)}
+            >
+              <div className="action-icon">⚡</div>
+              <span>Action Cards</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="map-overlay">
+        {/* Future overlay content like pins or labels can go here */}
+      </div>
+
+      {/* Treasure Hunt UI Layer - Absolute Top Z-Index */}
+      {isTreasureHunting && (
+        <>
+          {/* Shovel Cursor */}
+          <div
+            className="shovel-cursor"
+            style={{
+              left: cursorPos.x,
+              top: cursorPos.y,
+            }}
+          >
+            <img src={shovelImg} alt="Shovel Cursor" className="shovel-image" />
+          </div>
+
+          {/* Fixed Radar Compass */}
+          {currentTargetIndex < decorations.length && (
+            <div className="fixed-treasure-compass">
+              <div
+                className="compass-needle"
+                style={{ transform: `rotate(${compassRotation}deg)` }}
+              >
+                🧭
+              </div>
+              <div className="compass-label">Radar</div>
+            </div>
+          )}
+        </>
+      )}
+
+      {isPopupOpen && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <h2>Select 3 Cards</h2>
+            <div className="available-cards-grid">
+              {availableCards.map((card) => {
+                const isSelected = selectedCards.find((c) => c.id === card.id);
+                return (
+                  <div
+                    key={card.id}
+                    className={`available-card portrait-card ${isSelected ? "selected" : ""}`}
+                    onClick={() =>
+                      isSelected
+                        ? handleRemoveCard(card.id)
+                        : handleSelectCard(card)
+                    }
+                  >
                     <div
-                        className="shovel-cursor"
-                        style={{
-                            left: cursorPos.x,
-                            top: cursorPos.y
-                        }}
+                      className="card-content"
+                      style={{ backgroundColor: card.color }}
                     >
-                        <img src={shovelImg} alt="Shovel Cursor" className="shovel-image" />
+                      <span>{card.name}</span>
                     </div>
-
-                    {/* Fixed Radar Compass */}
-                    {currentTargetIndex < decorations.length && (
-                        <div className="fixed-treasure-compass">
-                            <div
-                                className="compass-needle"
-                                style={{ transform: `rotate(${compassRotation}deg)` }}
-                            >
-                                🧭
-                            </div>
-                            <div className="compass-label">Radar</div>
-                        </div>
-                    )}
-                </>
-            )}
-
-            {isPopupOpen && (
-                <div className="popup-overlay">
-                    <div className="popup-content">
-                        <h2>Select 3 Cards</h2>
-                        <div className="available-cards-grid">
-                            {availableCards.map((card) => {
-                                const isSelected = selectedCards.find(c => c.id === card.id);
-                                return (
-                                    <div
-                                        key={card.id}
-                                        className={`available-card portrait-card ${isSelected ? 'selected' : ''}`}
-                                        onClick={() => isSelected ? handleRemoveCard(card.id) : handleSelectCard(card)}
-                                    >
-                                        <div className="card-content" style={{ backgroundColor: card.color }}>
-                                            <span>{card.name}</span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                        <div className="popup-actions">
-                            <button
-                                className="confirm-btn"
-                                disabled={selectedCards.length !== 3}
-                                onClick={handleConfirmSelection}
-                            >
-                                Confirm Selection ({selectedCards.length}/3)
-                            </button>
-                            <button className="cancel-btn" onClick={() => setIsPopupOpen(false)}>
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="popup-actions">
+              <button
+                className="confirm-btn"
+                disabled={selectedCards.length !== 3}
+                onClick={handleConfirmSelection}
+              >
+                Confirm Selection ({selectedCards.length}/3)
+              </button>
+              <button
+                className="cancel-btn"
+                onClick={() => setIsPopupOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
             {isActionPopupOpen && (
                 <div className="popup-overlay">

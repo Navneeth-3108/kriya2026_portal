@@ -1,0 +1,1445 @@
+/* =================================================================
+   PirateArena.css v3 — "High-Seas Professional" AAA Overhaul
+   All rules scoped to .pirate-arena — safe for any website.
+   ================================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Special+Elite&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Fira+Code:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap");
+
+/* ── CSS Variables ─────────────────────────────────────────────── */
+.pirate-arena {
+  --pa-void: #010406;
+  --pa-base: #04090d;
+  --pa-surface: #071320;
+  --pa-raised: #0b1e30;
+
+  --pa-gold: #c8912a;
+  --pa-gold-bright: #f0b93a;
+  --pa-gold-glow: #ffd700;
+  --pa-gold-pale: #f5d98a;
+  --pa-gold-dim: rgba(200, 145, 42, 0.35);
+
+  --pa-parch-ink: #160c02;
+  --pa-parch-base: #dba96a;
+  --pa-parch-light: #edd8b0;
+  --pa-parch-pale: #f6ecd6;
+
+  --pa-teal: #2dd4bf;
+  --pa-seafoam: #6ee7b7;
+  --pa-crimson: #dc2626;
+  --pa-blood: #8b0000;
+
+  --pa-wood-dark: #1a0e06;
+  --pa-wood-mid: #3d2010;
+  --pa-wood-light: #6b3c1a;
+
+  --pa-glass-bg: rgba(4, 10, 18, 0.72);
+  --pa-glass-blur: blur(18px);
+  --pa-glass-border: rgba(200, 145, 42, 0.18);
+}
+
+/* ── Shell ────────────────────────────────────────────────────────
+   Full-screen wrapper with deep-sea gradient + vignette overlay */
+.pirate-arena {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  font-family: "Crimson Text", "Special Elite", serif;
+  color: var(--pa-parch-light);
+  z-index: 10000;
+  animation: pa-arena-enter 0.3s ease-in forwards;
+  background: linear-gradient(
+    160deg,
+    #020810 0%,
+    #04090f 35%,
+    #060d18 65%,
+    #030710 100%
+  );
+}
+
+.pirate-arena.is-closing {
+  animation: pa-arena-exit 0.25s ease-out forwards !important;
+}
+
+@keyframes pa-arena-enter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pa-arena-exit {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Depth vignette — corners darken, center glows */
+.pirate-arena::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 45%,
+    transparent 30%,
+    rgba(1, 4, 8, 0.45) 65%,
+    rgba(0, 2, 5, 0.85) 100%
+  );
+}
+
+/* Ambient candlelight — warm amber glow from top-center */
+.pirate-arena::after {
+  content: "";
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 200px;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(200, 145, 42, 0.12) 0%,
+    rgba(200, 100, 20, 0.06) 40%,
+    transparent 70%
+  );
+  filter: blur(20px);
+}
+
+.pirate-arena > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Scrollbars ───────────────────────────────────────────────── */
+.pirate-arena ::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.pirate-arena ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.6);
+}
+.pirate-arena ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3a1e08, #7a4a22 50%, #3a1e08);
+  border: 1px solid rgba(200, 145, 42, 0.15);
+  border-radius: 2px;
+}
+.pirate-arena ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #5a2e12, #c8912a 50%, #5a2e12);
+}
+.pirate-arena * {
+  box-sizing: border-box;
+}
+
+/* ── Global Split Layout ──────────────────────────────────────── */
+.pa-split {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* =================================================================
+   HEADER — Weathered Engraved Wood
+   ================================================================= */
+.pa-header {
+  height: 62px;
+  min-height: 62px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.4rem;
+  position: relative;
+  z-index: 50;
+
+  /* ── Wood grain via layered gradients + noise ── */
+  background-color: #2a1508;
+  background-image:
+    /* fine vertical grain stripes */
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 200, 120, 0.03) 0px,
+      transparent 2px,
+      transparent 12px,
+      rgba(0, 0, 0, 0.06) 14px,
+      transparent 16px
+    ),
+    /* coarser grain bands */
+    repeating-linear-gradient(
+        92deg,
+        transparent 0px,
+        rgba(255, 180, 80, 0.02) 30px,
+        rgba(0, 0, 0, 0.04) 60px,
+        transparent 90px
+      ),
+    /* base wood tone */
+    linear-gradient(180deg, #3d1e09 0%, #2a1508 30%, #1e0e05 60%, #2c1709 100%);
+
+  /* Elevation: shadow above (from dark ceiling) + glow below */
+  box-shadow:
+    0 -2px 0 rgba(0, 0, 0, 0.9) inset,
+    0 2px 0 rgba(200, 145, 42, 0.35),
+    0 4px 2px rgba(200, 145, 42, 0.06),
+    0 12px 40px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 200, 100, 0.06) inset;
+
+  /* Embossed upper rim */
+  border-top: 1px solid rgba(255, 200, 100, 0.1);
+  border-bottom: 2px solid rgba(80, 40, 10, 0.9);
+}
+
+/* Carved-in title — engraved wood effect */
+.pa-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0;
+  font-family: "Cinzel Decorative", "Cinzel", serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  pointer-events: none;
+
+  /* Engraved / brand-burned text */
+  color: #c8912a;
+  text-shadow:
+    0 1px 0 rgba(255, 220, 140, 0.25),
+    0 -1px 0 rgba(0, 0, 0, 0.7),
+    0 0 12px rgba(200, 145, 42, 0.25),
+    0 0 28px rgba(200, 100, 20, 0.12);
+
+  /* Very subtle depth */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+}
+
+/* Lives */
+.pa-lives {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(200, 145, 42, 0.14);
+  border-radius: 8px;
+  padding: 0.3rem 0.75rem;
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(200, 145, 42, 0.08);
+}
+.pa-lives-label {
+  font-family: "Cinzel", serif;
+  font-size: 0.65rem;
+  color: rgba(240, 200, 100, 0.88);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-right: 0.2rem;
+  text-shadow: 0 0 8px rgba(200, 145, 42, 0.5);
+}
+
+/* Skull icons */
+.pa-skull {
+  font-size: 1.35rem;
+  line-height: 1;
+  display: inline-block;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    filter 0.4s ease;
+  transform-origin: center;
+}
+.pa-skull.alive {
+  opacity: 1;
+  filter: drop-shadow(0 0 5px rgba(200, 145, 42, 0.8))
+    drop-shadow(0 0 10px rgba(255, 215, 0, 0.35));
+  animation: pa-skull-pulse 3s ease-in-out infinite;
+}
+.pa-skull.lost {
+  opacity: 0.12;
+  filter: grayscale(1) brightness(0.4);
+  transform: rotate(22deg) scale(0.8);
+  animation: none;
+}
+.pa-skull.shattering {
+  animation: pa-skull-shatter 0.7s ease-out forwards;
+}
+
+/* Bounty */
+.pa-bounty {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(200, 145, 42, 0.08);
+  border: 1px solid rgba(200, 145, 42, 0.22);
+  border-radius: 8px;
+  padding: 0.28rem 0.85rem;
+  box-shadow: inset 0 1px 0 rgba(255, 220, 140, 0.05);
+}
+.pa-bounty-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  animation: pa-coin-float 4s ease-in-out infinite;
+}
+.pa-coin {
+  font-size: 1rem;
+}
+.pa-bounty-value {
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pa-gold-glow);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  line-height: 1;
+}
+.pa-bounty-value.spinning {
+  animation: pa-coin-spin 0.65s ease-in-out;
+}
+.pa-bounty-label {
+  font-family: "Cinzel", serif;
+  font-size: 0.6rem;
+  color: rgba(200, 145, 42, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+/* =================================================================
+   LEFT PANEL — Premium Crinkled Parchment
+   ================================================================= */
+.pa-parchment {
+  width: 40%;
+  min-width: 300px;
+  max-width: none;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  position: relative;
+  padding: 2rem 2rem 3rem;
+
+  background:
+    linear-gradient(180deg, rgba(30, 8, 0, 0.55) 0%, transparent 50px),
+    linear-gradient(0deg, rgba(20, 5, 0, 0.45) 0%, transparent 50px),
+    linear-gradient(270deg, rgba(20, 5, 0, 0.35) 0%, transparent 30px),
+    linear-gradient(
+      155deg,
+      #f0ddb0 0%,
+      #e8cc95 12%,
+      #dec07c 30%,
+      #d4ae6a 50%,
+      #c8a058 68%,
+      #bd9250 82%,
+      #b08848 100%
+    );
+
+  box-shadow:
+    6px 0 30px rgba(0, 0, 0, 0.8),
+    inset -4px 0 16px rgba(30, 8, 0, 0.28),
+    inset 0 0 50px rgba(80, 30, 0, 0.1),
+    inset 0 8px 18px rgba(30, 8, 0, 0.35),
+    inset 0 -8px 18px rgba(20, 5, 0, 0.25);
+}
+
+/* Paper crinkle texture (SVG feTurbulence filter) */
+.pa-parchment::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' seed='8' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeBlend in='SourceGraphic' mode='multiply'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23paper)' opacity='0.18'/%3E%3C/svg%3E");
+}
+
+.pa-parchment > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Back Button */
+.pa-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(80, 45, 10, 0.16);
+  border: 1.5px solid rgba(90, 50, 15, 0.4);
+  border-radius: 5px;
+  color: #2b1204;
+  padding: 0.4rem 0.85rem;
+  font-family: "Cinzel", serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  transition: all 0.2s;
+  margin-bottom: 1.2rem;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.pa-btn-back:hover {
+  background: rgba(100, 55, 15, 0.28);
+  border-color: rgba(120, 65, 20, 0.65);
+  box-shadow:
+    inset 0 1px 4px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(40, 15, 0, 0.2);
+  transform: translateY(-1px);
+}
+.pa-btn-back:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.pa-btn-back span {
+  font-size: 1rem;
+  line-height: 0;
+}
+
+/* Tabs */
+.pa-tabs {
+  display: flex;
+  border: 1.5px solid rgba(90, 50, 15, 0.28);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.pa-tab {
+  flex: 1;
+  font-family: "Cinzel", serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.38rem 0;
+  border: none;
+  border-right: 1px solid rgba(90, 50, 15, 0.2);
+  background: rgba(80, 45, 10, 0.07);
+  color: rgba(50, 22, 4, 0.55);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+.pa-tab:last-child {
+  border-right: none;
+}
+.pa-tab:hover:not(.active) {
+  background: rgba(80, 45, 10, 0.16);
+  color: rgba(25, 10, 2, 0.78);
+}
+.pa-tab.active {
+  background: rgba(80, 45, 10, 0.26);
+  color: #100500;
+  font-weight: 700;
+  box-shadow:
+    inset 0 -2px 0 rgba(90, 50, 15, 0.5),
+    inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Badges */
+.pa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 3px;
+  font-family: "Cinzel", serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1.5px solid currentColor;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+.pa-badge.easy {
+  color: #1a5c32;
+  background: rgba(26, 92, 50, 0.12);
+}
+.pa-badge.medium {
+  color: #7a4e00;
+  background: rgba(122, 78, 0, 0.12);
+}
+.pa-badge.hard {
+  color: #7a0808;
+  background: rgba(122, 8, 8, 0.12);
+}
+.pa-tag {
+  font-size: 0.58rem;
+  font-family: "Cinzel", serif;
+  color: rgba(55, 25, 4, 0.58);
+  background: rgba(80, 45, 10, 0.1);
+  border: 1px solid rgba(80, 45, 10, 0.2);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+}
+
+/* Problem title */
+.pa-problem-title {
+  font-family: "Pirata One", cursive;
+  font-size: 1.55rem;
+  color: #180a00;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  margin: 0.38rem 0 0.4rem;
+  text-shadow:
+    1px 2px 0 rgba(255, 255, 255, 0.14),
+    0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Meta row */
+.pa-problem-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+  padding: 0.6rem 0;
+  margin-bottom: 1rem;
+  border-top: 1.5px dashed rgba(90, 50, 15, 0.28);
+  border-bottom: 1.5px dashed rgba(90, 50, 15, 0.28);
+  font-family: "Cinzel", serif;
+  font-size: 0.64rem;
+  color: rgba(45, 20, 4, 0.6);
+  letter-spacing: 0.04em;
+}
+
+/* Body text */
+.pa-body {
+  font-family: "Crimson Text", "Special Elite", serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #200a00;
+}
+.pa-body p {
+  margin-bottom: 1rem;
+}
+.pa-body code {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.8rem;
+  background: rgba(80, 45, 10, 0.14);
+  border: 1px solid rgba(80, 45, 10, 0.22);
+  border-radius: 3px;
+  padding: 0.04rem 0.32rem;
+  color: #140600;
+}
+.pa-body strong {
+  font-family: "Pirata One", cursive;
+  font-size: 1.05rem;
+  color: #0e0400;
+  font-weight: 400;
+}
+.pa-body ol {
+  padding-left: 1.2rem;
+  color: #200a00;
+}
+.pa-body ol li {
+  margin-bottom: 0.4rem;
+}
+
+.pa-section-label {
+  font-family: "Pirata One", cursive;
+  font-size: 1.05rem;
+  color: #1a0800;
+  margin: 1.2rem 0 0.6rem;
+  padding-left: 0.65rem;
+  border-left: 3px solid rgba(90, 50, 15, 0.55);
+  letter-spacing: 0.04em;
+}
+.pa-lore-quote {
+  font-style: italic;
+  color: rgba(35, 14, 2, 0.65);
+  border-left: 3px solid rgba(90, 50, 15, 0.4);
+  padding-left: 0.8rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  font-family: "Crimson Text", serif;
+}
+.pa-example-card {
+  border: 1px solid rgba(90, 50, 15, 0.32);
+  border-radius: 7px;
+  overflow: hidden;
+  margin: 0 0 1.1rem;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.13),
+    inset 0 1px 0 rgba(255, 240, 200, 0.2);
+}
+.pa-example-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(80, 45, 10, 0.2);
+  border-bottom: 1px solid rgba(90, 50, 15, 0.22);
+  padding: 0.3rem 0.85rem 0.28rem;
+}
+.pa-example-num {
+  font-family: "Cinzel", serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: rgba(40, 18, 4, 0.6);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.pa-example-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.pa-example-cell {
+  padding: 0.65rem 0.85rem;
+}
+.pa-example-cell + .pa-example-cell {
+  border-left: 1px dashed rgba(90, 50, 15, 0.28);
+  background: rgba(80, 45, 10, 0.06);
+}
+.pa-example-cell-label {
+  font-family: "Cinzel", serif;
+  font-size: 0.53rem;
+  color: rgba(50, 25, 5, 0.48);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+.pa-example-cell code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.82rem;
+  color: #1a0800;
+  display: block;
+  line-height: 1.55;
+  word-break: break-all;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.pa-example-note {
+  padding: 0.38rem 0.85rem 0.5rem;
+  border-top: 1px dashed rgba(90, 50, 15, 0.2);
+  font-size: 0.82rem;
+  font-style: italic;
+  color: rgba(40, 18, 4, 0.55);
+  font-family: "Crimson Text", serif;
+  line-height: 1.5;
+  background: rgba(80, 45, 10, 0.04);
+}
+.pa-constraint-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pa-constraint-list li {
+  position: relative;
+  padding: 0.28rem 0 0.28rem 1.3rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.79rem;
+  color: #1a0800;
+}
+.pa-constraint-list li::before {
+  content: "⚓";
+  position: absolute;
+  left: 0;
+  top: 0.3rem;
+  font-size: 0.52rem;
+  opacity: 0.55;
+}
+.pa-hint {
+  background: rgba(80, 45, 10, 0.1);
+  border: 1px dashed rgba(90, 50, 15, 0.3);
+  border-radius: 5px;
+  padding: 0.85rem;
+  font-size: 0.88rem;
+  color: rgba(35, 14, 2, 0.68);
+  font-family: "Crimson Text", serif;
+  line-height: 1.7;
+  font-style: italic;
+}
+.pa-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0.6rem;
+  color: rgba(55, 25, 4, 0.45);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: "Cinzel", serif;
+}
+.pa-divider::before,
+.pa-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(90, 50, 15, 0.35),
+    transparent
+  );
+}
+
+/* =================================================================
+   DIVIDER BAR
+   ================================================================= */
+.pa-divider-bar {
+  width: 5px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(200, 145, 42, 0.1) 20%,
+    rgba(200, 145, 42, 0.2) 50%,
+    rgba(200, 145, 42, 0.1) 80%,
+    transparent 100%
+  );
+  border-left: 1px solid rgba(80, 40, 10, 0.25);
+  border-right: 1px solid rgba(30, 50, 70, 0.2);
+  cursor: col-resize;
+  transition: background 0.25s;
+}
+.pa-divider-bar:hover {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(200, 145, 42, 0.18) 20%,
+    rgba(200, 145, 42, 0.42) 50%,
+    rgba(200, 145, 42, 0.18) 80%,
+    transparent 100%
+  );
+}
+
+/* =================================================================
+   RIGHT PANEL — Code Hold
+   ================================================================= */
+.pa-editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+/* Kraken watermark */
+.pa-editor-panel::before {
+  content: "🐙";
+  position: absolute;
+  bottom: 18%;
+  right: 2%;
+  font-size: 16rem;
+  opacity: 0.016;
+  pointer-events: none;
+  z-index: 0;
+  filter: grayscale(1);
+  transform: scaleX(-1) rotate(-8deg);
+}
+.pa-editor-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Toolbar */
+.pa-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.2rem;
+  height: 44px;
+  flex-shrink: 0;
+  background: var(--pa-glass-bg);
+  backdrop-filter: var(--pa-glass-blur);
+  -webkit-backdrop-filter: var(--pa-glass-blur);
+  border-bottom: 1px solid var(--pa-glass-border);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 215, 0, 0.04);
+  gap: 0.75rem;
+}
+.pa-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.pa-lang-select {
+  background: rgba(200, 145, 42, 0.07);
+  border: 1px solid rgba(200, 145, 42, 0.22);
+  color: var(--pa-gold-bright);
+  padding: 0.26rem 0.55rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+.pa-lang-select:hover {
+  border-color: rgba(200, 145, 42, 0.5);
+  background: rgba(200, 145, 42, 0.13);
+}
+.pa-lang-select option {
+  background: #071525;
+  color: var(--pa-gold-bright);
+}
+
+.pa-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow:
+    0 0 5px #34d399,
+    0 0 12px rgba(52, 211, 153, 0.35);
+  animation: pa-status-pulse 2.5s ease-in-out infinite;
+  display: inline-block;
+}
+.pa-solved-badge {
+  font-family: "Cinzel", serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.07em;
+  color: #6ee7b7;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.26);
+  padding: 0.14rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Action Bar — Frosted Obsidian */
+.pa-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1.2rem;
+  background: rgba(22, 12, 5, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200, 145, 42, 0.07);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.pa-btn {
+  font-family: "Cinzel", serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.44rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+  /* Prevent text selection */
+  user-select: none;
+}
+
+/* Button press */
+.pa-btn:active:not(:disabled) {
+  transform: translateY(2px) !important;
+  box-shadow: none !important;
+}
+.pa-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Submit — gold */
+.pa-btn-submit {
+  background: #7a5010;
+  color: #f5d98a;
+  border: 1px solid rgba(200, 145, 42, 0.4);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.pa-btn-submit:hover:not(:disabled) {
+  background: #9a6818;
+  border-color: rgba(200, 145, 42, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 14px rgba(200, 145, 42, 0.25);
+}
+
+/* Reset — muted red */
+.pa-btn-reset {
+  background: #3d0808;
+  color: #fca5a5;
+  border: 1px solid rgba(220, 38, 38, 0.22);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.pa-btn-reset:hover:not(:disabled) {
+  background: #5c1010;
+  border-color: rgba(220, 38, 38, 0.42);
+  transform: translateY(-1px);
+}
+
+.pa-btn-run::before,
+.pa-btn-submit::before,
+.pa-btn-reset::before {
+  display: none;
+}
+
+.pa-kbd-hint {
+  margin-left: auto;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.56rem;
+  color: rgba(200, 145, 42, 0.2);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* =================================================================
+   EDITOR ZONE
+   ================================================================= */
+.pa-editor-zone {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  transition:
+    filter 0.8s ease,
+    opacity 0.8s ease;
+}
+
+/* Cursed ink-dissolve erasure */
+.pa-editor-zone.shipwrecked {
+  animation: pa-ink-dissolve 1.5s ease-in-out;
+}
+
+/* Monaco bg override */
+.pa-editor-zone .monaco-editor,
+.pa-editor-zone .monaco-editor .margin,
+.pa-editor-zone .monaco-editor-background {
+  background-color: #120904 !important;
+}
+
+/* Collapsed state — header bar only */
+.pa-deck.pa-deck--collapsed {
+  flex: 0 0 auto;
+}
+.pa-deck.pa-deck--collapsed .pa-terminal {
+  display: none;
+}
+
+/* Toggle button */
+.pa-deck-toggle {
+  background: rgba(200, 145, 42, 0.1);
+  border: 1px solid rgba(200, 145, 42, 0.2);
+  color: rgba(200, 145, 42, 0.7);
+  font-size: 0.65rem;
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+  line-height: 1.4;
+}
+.pa-deck-toggle:hover {
+  background: rgba(200, 145, 42, 0.2);
+  color: var(--pa-gold-bright);
+}
+
+/* ── Lower Deck ─────────────────────────────────────────────── */
+.pa-deck {
+  flex: 0.45;
+  min-height: 120px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(200, 145, 42, 0.3);
+
+  background: linear-gradient(
+    180deg,
+    rgba(28, 16, 8, 0.92) 0%,
+    rgba(18, 10, 4, 0.95) 100%
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(200, 145, 42, 0.07);
+}
+
+.pa-deck-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.2rem;
+  height: 38px;
+  flex-shrink: 0;
+  background: rgba(35, 20, 10, 0.92);
+  border-bottom: 1px solid rgba(200, 145, 42, 0.14);
+}
+.pa-deck-title {
+  font-family: "Pirata One", cursive;
+  font-size: 0.85rem;
+  letter-spacing: 0.09em;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(90deg, #c8912a, #f0b93a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.pa-deck-meta {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.58rem;
+  color: rgba(200, 145, 42, 0.24);
+  letter-spacing: 0.05em;
+}
+.pa-deck-loading {
+  font-family: "Crimson Text", serif;
+  font-size: 0.72rem;
+  color: rgba(200, 145, 42, 0.6);
+  letter-spacing: 0.04em;
+  animation: pa-cursor-blink 0.75s steps(2) infinite;
+  font-style: italic;
+}
+
+.pa-terminal {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.7rem 1.2rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  background: transparent;
+}
+.pa-terminal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0.5rem;
+  color: rgba(200, 145, 42, 0.22);
+  font-family: "Crimson Text", serif;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  font-style: italic;
+}
+
+.pa-log {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 0.2rem;
+  animation: pa-line-in 0.22s ease-out;
+}
+.pa-log-pre {
+  font-size: 0.64rem;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.pa-log.pass .pa-log-pre,
+.pa-log.pass .pa-log-txt {
+  color: #86efac;
+}
+.pa-log.fail .pa-log-pre,
+.pa-log.fail .pa-log-txt {
+  color: #fca5a5;
+}
+.pa-log.error .pa-log-pre,
+.pa-log.error .pa-log-txt {
+  color: #f87171;
+}
+.pa-log.system .pa-log-pre {
+  color: #7dd3fc;
+}
+.pa-log.system .pa-log-txt {
+  color: #bae6fd;
+}
+.pa-log.info .pa-log-pre {
+  color: var(--pa-gold-bright);
+}
+.pa-log.info .pa-log-txt {
+  color: var(--pa-gold-pale);
+}
+.pa-log.warn .pa-log-pre,
+.pa-log.warn .pa-log-txt {
+  color: #fdba74;
+}
+.pa-log-txt {
+  word-break: break-all;
+}
+
+.pa-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 0.88em;
+  background: var(--pa-gold-bright);
+  vertical-align: text-bottom;
+  animation: pa-cursor-blink 0.9s steps(2) infinite;
+  opacity: 0.8;
+}
+
+/* =================================================================
+   GAME OVER OVERLAY — "The Deep"
+   ================================================================= */
+.pa-gameover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  text-align: center;
+  padding: 2.5rem;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(80, 0, 0, 0.92) 0%,
+    rgba(8, 0, 0, 0.96) 50%,
+    rgba(1, 3, 6, 0.99) 100%
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: pa-overlay-in 0.55s ease-out;
+}
+.pa-gameover-skulls {
+  font-size: 3.8rem;
+  display: flex;
+  gap: 0.85rem;
+  margin-bottom: 1.2rem;
+  animation: pa-float 3s ease-in-out infinite;
+}
+.pa-gameover-title {
+  font-family: "Cinzel Decorative", "Cinzel", serif;
+  font-size: 3rem;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.8rem;
+  padding: 0;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #ff5555, #cc0000, #ff5555);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 24px rgba(255, 0, 0, 0.55));
+  animation: pa-title-flicker 2s infinite;
+}
+.pa-gameover-sub {
+  font-family: "Crimson Text", serif;
+  font-size: 1rem;
+  color: rgba(240, 185, 90, 0.6);
+  line-height: 1.8;
+  max-width: 400px;
+  margin-bottom: 1.8rem;
+  font-style: italic;
+}
+.pa-gameover-rule {
+  width: 180px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(220, 38, 38, 0.7),
+    transparent
+  );
+  margin-bottom: 1.8rem;
+}
+.pa-btn-restart {
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.75rem 2.5rem;
+  background: linear-gradient(
+    135deg,
+    #4a0808,
+    #8b1010,
+    #bb1c1c,
+    #8b1010,
+    #4a0808
+  );
+  color: #ffcccc;
+  border: 1.5px solid rgba(255, 100, 100, 0.3);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow:
+    0 4px 28px rgba(160, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+.pa-btn-restart::before {
+  content: "";
+  position: absolute;
+  top: -5%;
+  left: -70%;
+  width: 50%;
+  height: 110%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 70%
+  );
+  transform: skewX(-15deg);
+  animation: pa-btn-shine 4s ease-in-out infinite;
+}
+.pa-btn-restart:hover {
+  background: linear-gradient(
+    135deg,
+    #621010,
+    #aa2020,
+    #ee2525,
+    #aa2020,
+    #621010
+  );
+  box-shadow:
+    0 8px 40px rgba(255, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 100, 100, 0.18);
+  transform: translateY(-2px);
+}
+.pa-btn-restart:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+.pa-gameover-epigraph {
+  margin-top: 2rem;
+  font-size: 0.7rem;
+  color: rgba(240, 185, 90, 0.22);
+  font-family: "Crimson Text", serif;
+  letter-spacing: 0.07em;
+  font-style: italic;
+}
+
+/* =================================================================
+   KEYFRAME ANIMATIONS
+   ================================================================= */
+
+/* Skull alive pulse */
+@keyframes pa-skull-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(200, 145, 42, 0.75))
+      drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(200, 145, 42, 1))
+      drop-shadow(0 0 16px rgba(255, 215, 0, 0.55));
+    transform: scale(1.06);
+  }
+}
+
+/* Skull shatter/smoke */
+@keyframes pa-skull-shatter {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+    filter: blur(0);
+  }
+  20% {
+    transform: scale(1.4) rotate(-12deg);
+    opacity: 0.9;
+    filter: blur(0);
+  }
+  45% {
+    transform: scale(1.1) rotate(8deg);
+    opacity: 0.6;
+    filter: blur(2px);
+  }
+  65% {
+    transform: scale(0.6) rotate(25deg);
+    opacity: 0.3;
+    filter: blur(6px);
+  }
+  100% {
+    transform: scale(0) rotate(40deg);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+/* Ink-dissolve code erasure */
+@keyframes pa-ink-dissolve {
+  0% {
+    filter: blur(0) brightness(1) contrast(1) sepia(0);
+    opacity: 1;
+  }
+  15% {
+    filter: blur(2px) brightness(1.1) contrast(1.1) sepia(0.1);
+    opacity: 0.95;
+  }
+  35% {
+    filter: blur(6px) brightness(0.8) contrast(0.8) sepia(0.5);
+    opacity: 0.7;
+  }
+  55% {
+    filter: blur(14px) brightness(0.5) contrast(0.6) sepia(0.9);
+    opacity: 0.35;
+  }
+  72% {
+    filter: blur(20px) brightness(0.2) contrast(0.4) sepia(1);
+    opacity: 0.08;
+  }
+  85% {
+    filter: blur(4px) brightness(0.4);
+    opacity: 0.5;
+  }
+  100% {
+    filter: blur(0) brightness(1);
+    opacity: 1;
+  }
+}
+
+/* Metallic button shine sweep */
+@keyframes pa-btn-shine {
+  0%,
+  85%,
+  100% {
+    left: -70%;
+  }
+  90% {
+    left: 130%;
+  }
+}
+
+/* Shimmer */
+@keyframes pa-shimmer {
+  0%,
+  100% {
+    background-position: -200% center;
+  }
+  50% {
+    background-position: 200% center;
+  }
+}
+
+/* Coin float */
+@keyframes pa-coin-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Coin spin (bounty increment) */
+@keyframes pa-coin-spin {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+  45% {
+    transform: rotateY(180deg) scale(1.5);
+  }
+  100% {
+    transform: rotateY(360deg) scale(1);
+  }
+}
+
+/* General float */
+@keyframes pa-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Status dot pulse */
+@keyframes pa-status-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 4px #34d399,
+      0 0 9px rgba(52, 211, 153, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 9px #34d399,
+      0 0 20px rgba(52, 211, 153, 0.5);
+  }
+}
+
+/* Overlay fade-in */
+@keyframes pa-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Title flicker */
+@keyframes pa-title-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  44% {
+    opacity: 0.88;
+  }
+  46% {
+    opacity: 0.55;
+  }
+  48% {
+    opacity: 0.94;
+  }
+  79% {
+    opacity: 0.85;
+  }
+}
+
+/* Terminal line entrance */
+@keyframes pa-line-in {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Cursor blink */
+@keyframes pa-cursor-blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .pa-parchment,
+  .pa-divider-bar {
+    display: none;
+  }
+}
