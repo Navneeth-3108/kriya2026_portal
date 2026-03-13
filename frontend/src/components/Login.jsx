@@ -46,29 +46,45 @@ function Login({ onLoginSuccess }) {
                 localStorage.setItem("team", JSON.stringify(data.team))
                 localStorage.setItem("token", data.token)
                 
-                // navigate to ship landing
-                navigate("/codequest/shiplanding")
+                // send OTP request
+                try {
+                    const otpRes = await fetch(`${API_BASE}/api/otp/send-otp`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ kriyaID: kriyaId, email })
+                    });
+                    
+                    const contentType = otpRes.headers.get("content-type");
+                    let otpData;
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        otpData = await otpRes.json();
+                    } else {
+                        otpData = { success: otpRes.ok, message: await otpRes.text() };
+                    }
+                    
+                    if (!otpRes.ok || (otpData.success !== undefined && !otpData.success)) {
+                        const errMsg = otpData.message || (typeof otpData === 'string' ? otpData : JSON.stringify(otpData));
+                        console.error("OTP Backend Rejected:", errMsg);
+                        setError("Login successful, but server rejected OTP request.");
+                    } else {
+                        // navigate to otp page and pass email and kriyaId
+                        navigate("/codequest/otp", { state: { kriyaId, email } });
+                    }
+                } catch (otpErr) {
+                    console.error("OTP Send Error:", otpErr);
+                    setError("Login successful, but server error when sending OTP.");
+                }
             }
 
         } catch (err) {
+            console.error("Login Exception:", err);
             setError("Server error. Please try again.")
         } finally {
             setLoading(false)
         }
     }
-
-    /*
-    ===== OTP LOGIC (DISABLED FOR NOW) =====
-
-    const handleSendOtp = async () => {
-        setStage("otp")
-    }
-
-    const handleVerifyOtp = async () => {
-        // verify OTP
-    }
-
-    */
 
     return (
         <div className="login-container">
